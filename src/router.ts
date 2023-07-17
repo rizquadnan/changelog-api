@@ -1,9 +1,27 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { handleInputErrors } from "./modules/input-validation";
-import { createProduct, deleteProduct, getProductById, getProducts, updateProduct } from "./handlers/product";
-import { createUpdate, deleteUpdate, getUpdateById, getUpdates, updateUpdate } from "./handlers/update";
-import { createUpdatePoint, deleteUpdatePointById, getUpdatePoint, getUpdatePointById, updateUpdatePointById } from "./handlers/update-point";
+import {
+  createProduct,
+  deleteProduct,
+  getProductById,
+  getProducts,
+  updateProduct,
+} from "./handlers/product";
+import {
+  createUpdate,
+  deleteUpdate,
+  getUpdateById,
+  getUpdates,
+  updateUpdate,
+} from "./handlers/update";
+import {
+  createUpdatePoint,
+  deleteUpdatePointById,
+  getUpdatePoint,
+  getUpdatePointById,
+  updateUpdatePointById,
+} from "./handlers/update-point";
 
 const router = Router();
 
@@ -18,7 +36,12 @@ router.post(
   handleInputErrors,
   createProduct
 );
-router.put("/product/:id", body("name").isString(), handleInputErrors, updateProduct);
+router.put(
+  "/product/:id",
+  body("name").isString(),
+  handleInputErrors,
+  updateProduct
+);
 router.delete("/product/:id", deleteProduct);
 
 /* 

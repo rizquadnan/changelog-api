@@ -2,11 +2,14 @@ import express from "express";
 import router from "./router";
 import morgan from "morgan";
 import cors from "cors";
+import swaggerUI from "swagger-ui-express"
+
 import { protectRoutes } from "./modules/auth";
 import { createNewUser, signIn } from "./handlers/user";
 import { body } from "express-validator";
 import { handleInputErrors } from "./modules/input-validation";
 import { handleRuntimeError } from "./modules/error";
+import { openapiSpecification } from "./swagger"
 
 const app = express();
 
@@ -19,6 +22,8 @@ app.get("/", (req, res) => {
   console.log("hello from express");
   throw new Error("Hahahahha");
 });
+
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 
 app.use("/api", protectRoutes, router);
 app.post(

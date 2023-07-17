@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import prisma from "../db";
-import { comparePassword, createJWT, hashPassword } from "../modules/auth";
-import { AppError } from "../modules/error";
-
+import prisma from "../../db";
+import { comparePassword, createJWT, hashPassword } from "../../modules/auth";
+import { AppError } from "../../modules/error";
 export const createNewUser = async (
   req: Request,
   res: Response,
