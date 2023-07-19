@@ -18,9 +18,12 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
  *       500:
  *         description: Some server error
  *         content:
@@ -54,7 +57,7 @@ export const getProducts = async (
 
 /**
  * @swagger
- * /api/product/:id:
+ * /api/product/{id}:
  *   get:
  *     security:
  *       - bearerAuth: []
@@ -75,7 +78,10 @@ export const getProducts = async (
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
  *       500:
  *         description: Some server error
  *         content:

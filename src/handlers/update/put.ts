@@ -5,7 +5,7 @@ import { AppError } from "../../modules/error";
 
 /**
  * @swagger
- * /api/update/:id:
+ * /api/update/{id}:
  *   put:
  *     security:
  *       - bearerAuth: []
@@ -32,7 +32,10 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Update'
  *       404:
  *         description: Cannot found update
  *         content:

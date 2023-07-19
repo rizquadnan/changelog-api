@@ -24,7 +24,10 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UpdatePoint'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/UpdatePoint'
  *       400:
  *         description: Invalid user input. Incomplete / invalid request body
  *         content:

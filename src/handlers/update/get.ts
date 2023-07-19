@@ -24,9 +24,12 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Update'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Update'
  *       404:
  *         description: Cannot found product you want to filter with
  *         content:
@@ -78,7 +81,7 @@ export const getUpdates = async (
 
 /**
  * @swagger
- * /api/update/:id:
+ * /api/update/{id}:
  *   get:
  *     security:
  *       - bearerAuth: []
@@ -105,7 +108,10 @@ export const getUpdates = async (
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Update'
  *       404:
  *         description: Cannot found update
  *         content:

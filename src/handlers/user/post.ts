@@ -14,15 +14,19 @@ import { AppError } from "../../modules/error";
  *     tags: [User]
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: username
- *         in: body
- *         required: true
- *         type: string
- *       - name: password
- *         in: body
- *         required: true
- *         type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: Username of user
+ *               password:
+ *                 type: string
+ *                 description: Password of user
  *     responses:
  *       200:
  *         description: Successfully sign up a user
@@ -79,15 +83,19 @@ export const createNewUser = async (
  *     tags: [User]
  *     produces:
  *       - application/json
- *     parameters:
- *       - name: username
- *         in: body
- *         required: true
- *         type: string
- *       - name: password
- *         in: body
- *         required: true
- *         type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: Username of user
+ *               password:
+ *                 type: string
+ *                 description: Password of user
  *     responses:
  *       200:
  *         description: Successfully sign in a user

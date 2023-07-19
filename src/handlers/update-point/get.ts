@@ -24,9 +24,12 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/UpdatePoint'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UpdatePoint'
  *       404:
  *         description: Cannot found update you want to filter with
  *         content:
@@ -78,7 +81,7 @@ export const getUpdatePoint: RequestHandler = async (req, res, next) => {
 
 /**
  * @swagger
- * /api/update-point/:id:
+ * /api/update-point/{id}:
  *   get:
  *     security:
  *       - bearerAuth: []
@@ -93,18 +96,16 @@ export const getUpdatePoint: RequestHandler = async (req, res, next) => {
  *           type: string
  *         required: true
  *         description: The id of the update point to be get
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdatePoint'
  *     responses:
  *       200:
  *         description: Successfully get an update point
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UpdatePoint'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/UpdatePoint'
  *       404:
  *         description: The update point is not found
  *         content:

@@ -11,13 +11,16 @@
  *       properties:
  *         id:
  *           type: string
- *           description: The uuid auto-generated id of the book
+ *           description: The uuid auto-generated id of the update point
+ *           readOnly: true
  *         createdAt:
  *           type: string
  *           description: Timestamp of creation date
+ *           readOnly: true
  *         updatedAt:
  *           type: string
  *           description: Timestamp of latest update date
+ *           readOnly: true
  *         title:
  *           type: string
  *           description: The title of the update point
@@ -34,14 +37,6 @@
  *         updateId:
  *           type: string
  *           description: The update that owns the update point
- *       example:
- *         id: uuid generated id
- *         createdAt: 2023-07-17 20:27:11.925
- *         updatedAt: 2023-07-17 20:27:11.925
- *         title: Feature 1 - Track your time
- *         description: No need to manually keep track of your work. Just input it to Chronos and have auto management available
- *         type: FEATURE
- *         updateId: uuid generated id 
  */
 
 /**

@@ -4,7 +4,7 @@ import { AppError } from "../../modules/error";
 
 /**
  * @swagger
- * /api/product/:id:
+ * /api/product/{id}:
  *   put:
  *     security:
  *       - bearerAuth: []
@@ -19,13 +19,22 @@ import { AppError } from "../../modules/error";
  *           type: string
  *         required: true
  *         description: The id of product to be updated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Product'
  *     responses:
  *       200:
  *         description: Successfully updates a product of a user
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
  *       400:
  *         description: Invalid user input. Incomplete / invalid request body
  *         content:

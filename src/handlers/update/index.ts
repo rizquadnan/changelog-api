@@ -10,13 +10,16 @@
  *       properties:
  *         id:
  *           type: string
- *           description: The uuid auto-generated id of the book
+ *           description: The uuid auto-generated id of the update
+ *           readOnly: true
  *         createdAt:
  *           type: string
  *           description: Timestamp of creation date
+ *           readOnly: true
  *         updatedAt:
  *           type: string
  *           description: Timestamp of latest update date
+ *           readOnly: true
  *         title:
  *           type: string
  *           description: Title of the product update
@@ -40,16 +43,6 @@
  *         productId:
  *           type: string
  *           description: The id of the product which is related to the update. Uuid generated string 
- *       example:
- *         id: uuid generated id
- *         createdAt: 2023-07-17 20:27:11.925
- *         updatedAt: 2023-07-17 20:27:11.925
- *         title: Early Release
- *         body: Long anticipated first release of Chronos is here! Its now fully functional to help the time needs of your work
- *         status: IN_PROGRESS
- *         version: 0.5.0
- *         asset: image url link
- *         productId: uuid generated id
  */
 
 /**

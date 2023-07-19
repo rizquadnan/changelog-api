@@ -4,7 +4,7 @@ import { AppError } from "../../modules/error";
 
 /**
  * @swagger
- * /api/update/:id:
+ * /api/update/{id}:
  *   delete:
  *     security:
  *       - bearerAuth: []
@@ -19,19 +19,16 @@ import { AppError } from "../../modules/error";
  *         description: The id of update to be deleted
  *     produces:
  *       - application/json
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Update'
  *     responses:
  *       200:
  *         description: Successfully deleted an update
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Update'
  *       404:
  *         description: Cannot found update
  *         content:

@@ -4,7 +4,7 @@ import { AppError } from "../../modules/error";
 
 /**
  * @swagger
- * /api/product/:id:
+ * /api/product/{id}:
  *   delete:
  *     security:
  *       - bearerAuth: []
@@ -25,7 +25,10 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/Product'
  *       500:
  *         description: Some server error
  *         content:

@@ -4,7 +4,7 @@ import { AppError } from "../../modules/error";
 
 /**
  * @swagger
- * /api/update-point/:id:
+ * /api/update-point/{id}:
  *   delete:
  *     security:
  *       - bearerAuth: []
@@ -19,18 +19,16 @@ import { AppError } from "../../modules/error";
  *           type: string
  *         required: true
  *         description: The id of the update point to be deleted
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdatePoint'
  *     responses:
  *       200:
  *         description: Successfully deleted an update point
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UpdatePoint'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/UpdatePoint'
  *       404:
  *         description: The update point is not found
  *         content:
