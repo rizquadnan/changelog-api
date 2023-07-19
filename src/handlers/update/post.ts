@@ -1,7 +1,49 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
-// Create update
+
+/**
+ * @swagger
+ * /api/update:
+ *   post:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Creates a new update and returns the created update
+ *     tags: [Update]
+ *     produces:
+ *       - application/json
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Update'
+ *     responses:
+ *       200:
+ *         description: Successfully created an update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Invalid user input. Incomplete / invalid request body
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       404:
+ *         description: The product to attach the update is not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const createUpdate = async (
   req: Request,
   res: Response,

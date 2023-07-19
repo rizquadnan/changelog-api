@@ -44,6 +44,13 @@
  *         updateId: uuid generated id 
  */
 
+/**
+ * @swagger
+ * tags:
+ *   name: UpdatePoint
+ *   description: The API for managing update points
+*/
+
 export * from "./get"
 export * from "./delete"
 export * from "./put"

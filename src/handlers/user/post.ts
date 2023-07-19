@@ -2,6 +2,51 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { comparePassword, createJWT, hashPassword } from "../../modules/auth";
 import { AppError } from "../../modules/error";
+
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: The API for managing users
+ * /user:
+ *   post:
+ *     summary: Creates a new user and generates a jwt user session token. Used for signing up
+ *     tags: [User]
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: username
+ *         in: body
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: body
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully sign up a user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: The jwt generated string
+ *       400:
+ *         description: Invalid user input. Either incomplete / invalid request body. Or user with provided username already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const createNewUser = async (
   req: Request,
   res: Response,
@@ -23,6 +68,50 @@ export const createNewUser = async (
   }
 };
 
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: The API for managing users
+ * /sign_in:
+ *   post:
+ *     summary: Generates a jwt user session token. Used for signing in
+ *     tags: [User]
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: username
+ *         in: body
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: body
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully sign in a user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: The jwt generated string
+ *       400:
+ *         description: Invalid user input. Either incomplete / invalid request body. Or user with provided username already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const signIn = async (
   req: Request,
   res: Response,

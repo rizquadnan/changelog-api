@@ -52,6 +52,13 @@
  *         productId: uuid generated id
  */
 
+/**
+ * @swagger
+ * tags:
+ *   name: Update
+ *   description: The API for managing updates
+*/
+
 export * from "./get"
 export * from "./post"
 export * from "./put"

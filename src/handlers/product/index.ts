@@ -30,6 +30,13 @@
  *         belongsToId: uuid generated id
  */
 
+/**
+ * @swagger
+ * tags:
+ *   name: Product
+ *   description: The API for managing products
+*/
+
 export * from "./get"
 export * from "./post"
 export * from "./put"

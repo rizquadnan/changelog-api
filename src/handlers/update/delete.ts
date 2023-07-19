@@ -2,7 +2,49 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
 
-// Delete update
+/**
+ * @swagger
+ * /api/update/:id:
+ *   delete:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Deletes an update and returns the deleted update
+ *     tags: [Update]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The id of update to be deleted
+ *     produces:
+ *       - application/json
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Update'
+ *     responses:
+ *       200:
+ *         description: Successfully deleted an update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Cannot found update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const deleteUpdate = async (
   req: Request,
   res: Response,

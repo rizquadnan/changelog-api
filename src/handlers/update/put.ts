@@ -2,7 +2,50 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 
 import { AppError } from "../../modules/error";
-// Update update
+
+/**
+ * @swagger
+ * /api/update/:id:
+ *   put:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Updates an update and returns the updated update
+ *     tags: [Update]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The id of update to be updated
+ *     produces:
+ *       - application/json
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Update'
+ *     responses:
+ *       200:
+ *         description: Successfully updated an update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       404:
+ *         description: Cannot found update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const updateUpdate = async (
   req: Request,
   res: Response,

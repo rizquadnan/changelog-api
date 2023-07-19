@@ -2,7 +2,32 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
 
-// Get all
+/**
+ * @swagger
+ * /api/product:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Gets all products of a user
+ *     tags: [Product]
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Successfully get all products of a user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const getProducts = async (
   req: Request,
   res: Response,
@@ -27,7 +52,37 @@ export const getProducts = async (
   }
 };
 
-// Get product
+/**
+ * @swagger
+ * /api/product/:id:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The id of product to be get
+ *     summary: Gets a product of a user
+ *     tags: [Product]
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Successfully get a product of a user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#components/schemas/Error'
+ */
 export const getProductById = async (
   req: Request,
   res: Response,
