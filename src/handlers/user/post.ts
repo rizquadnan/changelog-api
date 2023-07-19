@@ -35,9 +35,18 @@ import { AppError } from "../../modules/error";
  *             schema:
  *               type: object
  *               properties:
- *                 token:
- *                   type: string
- *                   description: The jwt generated string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: The jwt generated string
+ *                     userId:
+ *                       type: string
+ *                       description: The id of the user
+ *                     username:
+ *                       type: string
+ *                       description: The username of the user
  *       400:
  *         description: Invalid user input. Either incomplete / invalid request body. Or user with provided username already exists
  *         content:
@@ -65,7 +74,11 @@ export const createNewUser = async (
     });
 
     return res.json({
-      token: createJWT({ userId: user.id, username: user.username }),
+      data: {
+        token: createJWT({ userId: user.id, username: user.username }),
+        userId: user.id,
+        username: user.username
+      },
     });
   } catch (error) {
     return next(new AppError({ originalError: error }));
@@ -104,9 +117,18 @@ export const createNewUser = async (
  *             schema:
  *               type: object
  *               properties:
- *                 token:
- *                   type: string
- *                   description: The jwt generated string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: The jwt generated string
+ *                     userId:
+ *                       type: string
+ *                       description: The id of the user
+ *                     username:
+ *                       type: string
+ *                       description: The username of the user
  *       400:
  *         description: Invalid user input. Either incomplete / invalid request body. Or user with provided username already exists
  *         content:
@@ -156,7 +178,11 @@ export const signIn = async (
     }
 
     return res.json({
-      token: createJWT({ userId: user.id, username: user.username }),
+      data: {
+        token: createJWT({ userId: user.id, username: user.username }),
+        userId: user.id,
+        username: user.username,
+      },
     });
   } catch (error) {
     return next(new AppError({ originalError: error }));

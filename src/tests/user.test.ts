@@ -5,16 +5,16 @@ import { hashPasswordSync, verifyToken } from "../modules/auth";
 import prisma from "./helpers/prisma";
 describe("/user", () => {
   describe("[POST] /user", () => {
-    it("should respond 200 and body with valid session token", async () => {
+    it("should respond 200 and body with valid session token and user information", async () => {
       const { status, body } = await request(app).post("/user").send({
         username: "adnan",
         password: "admin"
       });
 
       expect(status).toBe(200)
-      expect(body.token).toBeDefined()
-      const { username } = verifyToken(body.token);
-      expect(username).toBe("adnan")
+      expect(body.data.token).toBeDefined()
+      expect(body.data.userId).toBeDefined();
+      expect(body.data.username).toBe("adnan");
     });
     it("should respond with 400 and body with errors when invalid body is sent", async () => {
       const { status, body } = await request(app).post("/user").send({
@@ -46,7 +46,7 @@ describe("/user", () => {
 
 describe("/sign_in", () => {
   describe("[POST /sign_in", () => {
-    it("should respond 200 and body with valid session token", async () => {
+    it("should respond 200 and body with valid session token and user information", async () => {
       await prisma.user.create({
         data: {
           username: "adnan",
@@ -59,8 +59,10 @@ describe("/sign_in", () => {
         password: "admin"
       })
 
-      expect(status).toBe(200)
-      expect(body.token).toBeDefined();
+      expect(status).toBe(200);
+      expect(body.data.token).toBeDefined();
+      expect(body.data.userId).toBeDefined();
+      expect(body.data.username).toBe("adnan");
     })
     it("should return 404 and body with valid message if user with provided username not exists", async () => {
       const { status, body } = await request(app).post("/sign_in").send({
