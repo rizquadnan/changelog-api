@@ -9,6 +9,19 @@ const options = {
       version: "1.0.0",
     },
     components: {
+      schemas: {
+        Error: {
+          type: "object",
+          required: ["message"],
+          properties: {
+            message: {
+              type: "string",
+              description:
+                "The message describing what went wrong in an operation",
+            },
+          },
+        },
+      },
       securitySchemes: {
         bearerAuth: {
           type: "http",
