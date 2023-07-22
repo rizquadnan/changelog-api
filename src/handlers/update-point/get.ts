@@ -1,6 +1,10 @@
 import { RequestHandler } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
+import {
+  hasPagination,
+  paginationToSkipAndTake,
+} from "../../modules/pagination";
 
 /**
  * @swagger
@@ -16,6 +20,8 @@ import { AppError } from "../../modules/error";
  *         schema:
  *           type: string
  *         description: Filter by update. The id of update you want to get the update points
+ *       - $ref: '#/parameters/page'
+ *       - $ref: '#/parameters/page_size'
  *     produces:
  *       - application/json
  *     responses:
@@ -24,12 +30,14 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/UpdatePoint'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedData'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/UpdatePoint'
  *       404:
  *         description: Cannot found update you want to filter with
  *         content:
@@ -45,12 +53,18 @@ import { AppError } from "../../modules/error";
  */
 export const getUpdatePoint: RequestHandler = async (req, res, next) => {
   const targetUpdateId = req.query["update_id"];
-
   if (Array.isArray(targetUpdateId)) {
     return next(
-      new AppError({ statusCode: 400, message: "Query param not supported" })
+      new AppError({
+        statusCode: 400,
+        message: "update_id query param invalid",
+      })
     );
   }
+
+  const page = req.query.page as string | undefined;
+  const pageSize = req.query["page_size"] as string | undefined;
+  const includePagination = hasPagination(page, pageSize);
 
   try {
     const products = await prisma.product.findMany({
@@ -65,7 +79,20 @@ export const getUpdatePoint: RequestHandler = async (req, res, next) => {
             ...(targetUpdateId ? { id: targetUpdateId } : {}),
           },
           select: {
-            updatePoints: true,
+            updatePoints: includePagination
+              ? {
+                  ...paginationToSkipAndTake(
+                    page as string,
+                    pageSize as string
+                  ),
+                  orderBy: {
+                    createdAt: "asc",
+                  },
+                }
+              : true,
+            ...(includePagination
+              ? { _count: { select: { updatePoints: true } } }
+              : {}),
           },
         },
       },
@@ -73,6 +100,9 @@ export const getUpdatePoint: RequestHandler = async (req, res, next) => {
 
     res.json({
       data: products.flatMap((p) => p.updates.flatMap((u) => u.updatePoints)),
+      ...(includePagination
+        ? { pagination: { total: products[0].updates[0]._count?.updatePoints } }
+        : {}),
     });
   } catch (error) {
     next(new AppError({ originalError: error }));

@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
+import {
+  hasPagination,
+  paginationToSkipAndTake,
+} from "../../modules/pagination";
 
 /**
  * @swagger
@@ -16,6 +20,8 @@ import { AppError } from "../../modules/error";
  *         schema:
  *           type: string
  *         description: Filter by product. The id of product you want to get the updates
+ *       - $ref: '#/parameters/page'
+ *       - $ref: '#/parameters/page_size'
  *     produces:
  *       - application/json
  *     responses:
@@ -24,12 +30,14 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Update'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedData'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Update'
  *       404:
  *         description: Cannot found product you want to filter with
  *         content:
@@ -52,9 +60,16 @@ export const getUpdates = async (
     const targetProductId = req.query["product_id"];
     if (Array.isArray(targetProductId)) {
       return next(
-        new AppError({ statusCode: 400, message: "Query param not supported" })
+        new AppError({
+          statusCode: 400,
+          message: "Product id query param invalid",
+        })
       );
     }
+
+    const page = req.query.page as string | undefined;
+    const pageSize = req.query["page_size"] as string | undefined;
+    const includePagination = hasPagination(page, pageSize);
 
     const products = await prisma.product.findMany({
       where: {
@@ -67,12 +82,23 @@ export const getUpdates = async (
           : {}),
       },
       include: {
-        updates: true,
+        updates: includePagination
+          ? {
+              ...paginationToSkipAndTake(page as string, pageSize as string),
+              orderBy: {
+                createdAt: "asc",
+              },
+            }
+          : true,
+        ...(includePagination ? { _count: { select: { updates: true } } } : {}),
       },
     });
 
     return res.json({
       data: products.flatMap((v) => v.updates),
+      ...(includePagination
+        ? { pagination: { total: products[0]._count?.updates ?? 0 } }
+        : {}),
     });
   } catch (error) {
     return next(new AppError({ originalError: error }));

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { body } from "express-validator";
-import { handleInputErrors } from "./modules/input-validation";
+import { body, query } from "express-validator";
+import { handleValidationErrors } from "./modules/validation";
 import {
   createProduct,
   deleteProduct,
@@ -22,24 +22,30 @@ import {
   getUpdatePointById,
   updateUpdatePointById,
 } from "./handlers/update-point";
+import { validatePaginationQueryParam } from "./modules/pagination";
 
 const router = Router();
 
 /* 
  Product
 */
-router.get("/product", getProducts);
+router.get(
+  "/product",
+  ...validatePaginationQueryParam(),
+  handleValidationErrors,
+  getProducts
+);
 router.get("/product/:id", getProductById);
 router.post(
   "/product",
   ...[body("name").isString()],
-  handleInputErrors,
+  handleValidationErrors,
   createProduct
 );
 router.put(
   "/product/:id",
   body("name").isString(),
-  handleInputErrors,
+  handleValidationErrors,
   updateProduct
 );
 router.delete("/product/:id", deleteProduct);
@@ -47,7 +53,7 @@ router.delete("/product/:id", deleteProduct);
 /* 
  Update
 */
-router.get("/update", getUpdates);
+router.get("/update", ...validatePaginationQueryParam(), handleValidationErrors, getUpdates);
 router.get("/update/:id", getUpdateById);
 router.post(
   "/update",
@@ -61,7 +67,7 @@ router.post(
       .optional()
       .isIn(["IN_PROGRESS", "DEPRECATED", "LIVE", "ARCHIVED"]),
   ],
-  handleInputErrors,
+  handleValidationErrors,
   createUpdate
 );
 router.put(
@@ -75,7 +81,7 @@ router.put(
       .optional()
       .isIn(["IN_PROGRESS", "DEPRECATED", "LIVE", "ARCHIVED"]),
   ],
-  handleInputErrors,
+  handleValidationErrors,
   updateUpdate
 );
 router.delete("/update/:id", deleteUpdate);
@@ -93,7 +99,7 @@ router.post(
     body("updateId").isString(),
     body("type").isIn(["FEATURE", "IMPROVEMENT", "BUG"]),
   ],
-  handleInputErrors,
+  handleValidationErrors,
   createUpdatePoint
 );
 router.put(
@@ -103,7 +109,7 @@ router.put(
     body("description").optional().isString(),
     body("type").optional().isIn(["FEATURE", "IMPROVEMENT", "BUG"]),
   ],
-  handleInputErrors,
+  handleValidationErrors,
   updateUpdatePointById
 );
 router.delete("/update_point/:id", deleteUpdatePointById);

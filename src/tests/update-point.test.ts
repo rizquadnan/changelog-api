@@ -122,7 +122,7 @@ describe("/api/update_point", () => {
       expect(body.data).toHaveLength(0);
     });
 
-    it("should return 200 and all updates points of an update", async () => {
+    it("should return 200 and all updates points of an update when given update_id query param", async () => {
       const token = await getTokenViaSignUp();
       const { id: userId } = verifyToken(token);
 
@@ -196,6 +196,101 @@ describe("/api/update_point", () => {
       // @ts-ignore
       expect(body.data.every((v) => v.updateId === targetUpdate.id)).toBe(true);
     });
+
+    it("should return 200 and paginated update points when given pagination query param", async () => {
+      const { token, update } = await setupUserProductAndUpdate();
+
+      // create many update points
+      const mockUpdatePointNames = [...Array(15)].map((_, i) => `Update Point ${i + 1}`);
+      await prisma.updatePoint.createMany({
+        data: mockUpdatePointNames.map((name) => ({
+          title: name,
+          description: 'Lorem ipsum doler amet',
+          type: "FEATURE",
+          updateId: update.id,
+        })),
+      });
+
+      // request with query param
+      const {status, body} = await request(app).get("/api/update_point?page=2&page_size=5").set("Authorization", `Bearer ${token}`)
+
+      // assert pagination
+      const data = body.data as Array<{ title: string}>
+      expect(status).toBe(200)
+      expect(data).toHaveLength(5)
+      expect(data.map(v => v.title)).toEqual(mockUpdatePointNames.slice(5).slice(0, 5))
+      expect(body.pagination).toBeDefined()
+      expect(body.pagination.total).toBe(mockUpdatePointNames.length)
+    });
+
+    it(
+      "should return 200 and paginated update points of an update when given pagination query param and update_id query param", async () => {
+        // create user
+        const token = await getTokenViaSignUp()
+        const { id: userId } = verifyToken(token);
+        
+        // create product
+        const product = await prisma.product.create({
+          data: {
+            name: "The Product",
+            belongsToId: userId 
+          }
+        })
+
+        // create 2 updates
+        const update1 = await prisma.update.create({
+          data: {
+            title: "Update 1",
+            body: "Lorem ipsum dolor amat",
+            productId: product.id
+          }
+        })
+        const update2 = await prisma.update.create({
+          data: {
+            title: "Update 2",
+            body: "Lorem ipsum dolor amat",
+            productId: product.id,
+          },
+        });
+
+        // create many update points
+        const mockUpdate1UpdatePointNames = [...Array(15)].map(
+          (_, i) => `${update1.title} - Update Point ${i + 1}`
+        );
+        await prisma.updatePoint.createMany({
+          data: mockUpdate1UpdatePointNames.map((name) => ({
+            title: name,
+            description: "Lorem ipsum doler amet",
+            type: "FEATURE",
+            updateId: update1.id,
+          })),
+        });
+        const mockUpdate2UpdatePointNames = [...Array(15)].map(
+          (_, i) => `${update2.title} - Update Point ${i + 1}`
+        );
+        await prisma.updatePoint.createMany({
+          data: mockUpdate2UpdatePointNames.map((name) => ({
+            title: name,
+            description: "Lorem ipsum doler amet",
+            type: "FEATURE",
+            updateId: update2.id,
+          })),
+        });
+
+        // request with query param
+        const { status, body } = await request(app).get(`/api/update_point?page=2&page_size=5&update_id=${update2.id}`).set("Authorization", `Bearer ${token}`)
+
+        // assert pagination
+        const data = body.data as Array<{ title: string }>;
+        expect(status).toBe(200);
+        expect(data).toHaveLength(5);
+        expect(data.map((v) => v.title)).toEqual(
+          mockUpdate2UpdatePointNames.slice(5).slice(0, 5)
+        );
+        expect(body.pagination).toBeDefined()
+        expect(body.pagination.total).toBe(mockUpdate2UpdatePointNames.length)
+      }
+    );
   });
 });
 
@@ -290,22 +385,27 @@ describe("/api/update_point/:id", () => {
       expect(body.data.id).toBe(updatePoint.id);
     });
     it("should return 404 and body with message when the requested update point is not found", async () => {
-      const token = await getTokenViaSignUp()
+      const token = await getTokenViaSignUp();
 
-      const { status, body } = await request(app).delete(`/api/update_point/not-exists-id`).set("Authorization", `Bearer ${token}`)
+      const { status, body } = await request(app)
+        .delete(`/api/update_point/not-exists-id`)
+        .set("Authorization", `Bearer ${token}`);
 
-      expect(status).toBe(404)
-      expect(body.message).toBe("No UpdatePoint found")
+      expect(status).toBe(404);
+      expect(body.message).toBe("No UpdatePoint found");
     });
     it("should return 404 and body with message when it is requested to delete an update point of another user", async () => {
       // setups user 1 and user 2
       // creates product, update and updatePoint for each user
-      const user1Token = await getTokenViaSignUp({ username: "adnan", password: "admin"});
+      const user1Token = await getTokenViaSignUp({
+        username: "adnan",
+        password: "admin",
+      });
       const user2Token = await getTokenViaSignUp({
         username: "john",
         password: "admin",
       });
-      
+
       const { id: user1Id } = verifyToken(user1Token);
       const { id: user2Id } = verifyToken(user2Token);
 
@@ -361,8 +461,8 @@ describe("/api/update_point/:id", () => {
         .delete(`/api/update_point/${user2UpdatePoint.id}`)
         .set("Authorization", `Bearer ${user1Token}`);
 
-      expect(status).toBe(404)
+      expect(status).toBe(404);
       expect(body.message).toBe("No UpdatePoint found");
-    })
+    });
   });
 });

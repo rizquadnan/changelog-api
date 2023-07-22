@@ -21,6 +21,19 @@ const options = {
             },
           },
         },
+        PaginatedData: {
+          type: "object",
+          properties: {
+            total: {
+              type: "integer",
+              minimum: 1
+            },
+            data: {
+              type: "array",
+              items: {},
+            },
+          },
+        },
       },
       securitySchemes: {
         bearerAuth: {
@@ -28,6 +41,24 @@ const options = {
           scheme: "bearer",
           bearerFormat: "JWT",
         },
+      },
+    },
+    parameters: {
+      page: {
+        in: "query",
+        name: "page",
+        required: false,
+        type: "integer",
+        minimum: 1,
+        description: "For describing which page to get on a paginated GET",
+      },
+      'page_size': {
+        in: "query",
+        name: "page_size",
+        required: false,
+        type: "integer",
+        minimum: 1,
+        description: "For describing how many records to include in a page on a paginated GET",
       },
     },
   },

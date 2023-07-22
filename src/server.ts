@@ -7,7 +7,7 @@ import swaggerUI from "swagger-ui-express"
 import { protectRoutes } from "./modules/auth";
 import { createNewUser, signIn } from "./handlers/user";
 import { body } from "express-validator";
-import { handleInputErrors } from "./modules/input-validation";
+import { handleValidationErrors } from "./modules/validation";
 import { handleRuntimeError } from "./modules/error";
 import { openapiSpecification } from "./swagger"
 
@@ -29,13 +29,13 @@ app.use("/api", protectRoutes, router);
 app.post(
   "/user",
   ...[body("username").isString(), body("password").isString()],
-  handleInputErrors,
+  handleValidationErrors,
   createNewUser
 );
 app.post(
   "/sign_in",
   ...[body("username").isString(), body("password").isString()],
-  handleInputErrors,
+  handleValidationErrors,
   signIn
 );
 

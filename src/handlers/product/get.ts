@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../../db";
 import { AppError } from "../../modules/error";
+import { hasPagination, paginationToSkipAndTake } from "../../modules/pagination";
 
 /**
  * @swagger
@@ -10,6 +11,9 @@ import { AppError } from "../../modules/error";
  *       - bearerAuth: []
  *     summary: Gets all products of a user
  *     tags: [Product]
+ *     parameters:
+ *       - $ref: '#/parameters/page'
+ *       - $ref: '#/parameters/page_size'
  *     produces:
  *       - application/json
  *     responses:
@@ -18,12 +22,14 @@ import { AppError } from "../../modules/error";
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Product'
+ *               allOf:
+ *                 - $ref: '#/components/schemas/PaginatedData'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Product'
  *       500:
  *         description: Some server error
  *         content:
@@ -36,6 +42,10 @@ export const getProducts = async (
   res: Response,
   next: NextFunction
 ) => {
+  const page = req.query.page as string | undefined;
+  const pageSize = req.query['page_size'] as string | undefined;
+  const includePagination = hasPagination(page, pageSize)
+
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -43,12 +53,31 @@ export const getProducts = async (
         id: req.user.id,
       },
       include: {
-        products: true,
+        products: includePagination
+          ? {
+              ...paginationToSkipAndTake(page as string, pageSize as string),
+              orderBy: {
+                createdAt: "asc"
+              },
+            }
+          : true,
+          ...(includePagination ? {
+            _count: {
+              select: {
+                products: true
+              }
+            }
+          } : {})
       },
     });
 
     return res.json({
       data: user?.products,
+      ...(includePagination ? {
+        pagination: {
+          total: user?._count?.products ?? 0,
+        }
+      } : {})
     });
   } catch (error) {
     return next(new AppError({ originalError: error }));

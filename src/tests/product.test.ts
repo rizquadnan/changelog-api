@@ -65,6 +65,46 @@ describe("/api/product", () => {
       expect(data).toHaveLength(mockProductNames.length);
       expect(data.map((v) => v.name)).toEqual(mockProductNames);
     });
+
+    it("should return 200 and body with data that is paginated when given pagination query params", async () => {
+      const user = await prisma.user.create({
+        data: {
+          username: "adnan",
+          password: hashPasswordSync("admin"),
+        },
+      });
+
+      const mockProductNames = [...Array(15)].map((_, i) => `Product ${i + 1}`);
+      await prisma.product.createMany({
+        data: mockProductNames.map((name, i) => ({
+          name,
+          belongsToId: user.id,
+        })),
+      });
+
+      const token = await getTokenViaSignIn({
+        username: "adnan",
+        password: "admin",
+      });
+
+
+      const { status, body } = await request(app)
+        .get(`/api/product?page=2&page_size=5`)
+        .set("Authorization", `Bearer ${token}`);
+
+      // force type just to help assert name
+      const data = body.data as Array<{ name: string }>;
+
+      // take 5 names with offset of 5
+      const secondFiveMockProductNames = mockProductNames.slice(5).slice(0, 5)
+      
+      expect(status).toBe(200);
+      expect(data).toBeDefined();
+      expect(data).toHaveLength(5);
+      expect(data.map((v) => v.name)).toEqual(secondFiveMockProductNames);
+      expect(body.pagination).toBeDefined()
+      expect(body.pagination.total).toBe(mockProductNames.length);
+    });
     it("should return 200 and an empty array when no products exists", async () => {
       const token = await getTokenViaSignUp();
 

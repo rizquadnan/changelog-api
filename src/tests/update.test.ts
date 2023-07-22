@@ -65,6 +65,104 @@ describe("/api/update", () => {
       );
     });
 
+    it("should return 200 and body with paginated update when given pagination query param", async () => {
+      // create user
+      const token = await getTokenViaSignUp();
+      const { id: userId } = verifyToken(token);
+
+      // create product
+      const product = await prisma.product.create({
+        data: {
+          name: "The Product",
+          belongsToId: userId,
+        },
+      });
+
+      // create many updates
+      const mockUpdateNames = [...Array(15)].map((_, i) => `Update ${i + 1}`);
+      await prisma.update.createMany({
+        data: mockUpdateNames.map((name) => ({
+          title: name,
+          body: "Lorem ipsum doler amet",
+          productId: product.id,
+        })),
+      });
+
+      // request with query params
+      const { status, body } = await request(app)
+        .get("/api/update?page=2&page_size=5")
+        .set("Authorization", `Bearer ${token}`);
+
+      // force type just to help assert name
+      const data = body.data as Array<{ title: string }>;
+
+      // assert pagination
+      expect(status).toBe(200);
+      expect(data).toHaveLength(5);
+      expect(data.map((v) => v.title)).toEqual(
+        mockUpdateNames.slice(5).slice(0, 5)
+      );
+      expect(body.pagination).toBeDefined()
+      expect(body.pagination.total).toBe(mockUpdateNames.length)
+    });
+
+    it("should return 200 and body with paginated update and of a given product when given pagination query param and product_id query param", async () => {
+      // create user
+      const token = await getTokenViaSignUp();
+      const { id: userId } = verifyToken(token);
+
+      // create products
+      const product1 = await prisma.product.create({
+        data: {
+          name: "The Product 1",
+          belongsToId: userId,
+        },
+      });
+      const product2 = await prisma.product.create({
+        data: {
+          name: "The Product 2",
+          belongsToId: userId,
+        },
+      });
+
+      // create many updates
+      const mockProduct1UpdateNames = [...Array(15)].map((_, i) => `${product1.name} Update ${i + 1}`);
+      await prisma.update.createMany({
+        data: mockProduct1UpdateNames.map((name) => ({
+          title: name,
+          body: "Lorem ipsum doler amet",
+          productId: product1.id,
+        })),
+      });
+      const mockProduct2UpdateNames = [...Array(15)].map(
+        (_, i) => `${product2.name} Update ${i + 1}`
+      );
+      await prisma.update.createMany({
+        data: mockProduct2UpdateNames.map((name) => ({
+          title: name,
+          body: "Lorem ipsum doler amet",
+          productId: product2.id,
+        })),
+      });
+
+      // request with query params
+      const { status, body } = await request(app)
+        .get(`/api/update?page=2&page_size=5&product_id=${product2.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      // force type just to help assert name
+      const data = body.data as Array<{ title: string }>;
+
+      // assert pagination
+      expect(status).toBe(200);
+      expect(data).toHaveLength(5);
+      expect(data.map((v) => v.title)).toEqual(
+        mockProduct2UpdateNames.slice(5).slice(0, 5)
+      );
+      expect(body.pagination).toBeDefined()
+      expect(body.pagination.total).toBe(mockProduct2UpdateNames.length);
+    })
+
     it("should return 200 and all updates of a user", async () => {
       const { token } = await setupUserProductAndUpdates();
 
@@ -156,43 +254,43 @@ describe("/api/update/:id", () => {
       expect(body.data).toBeDefined();
       expect(body.data.title).toBe("The Update Updated");
     });
-    it(
-      "should return 404 and body with message when provided update id not found", async () => {
-        const token = await getTokenViaSignUp()
+    it("should return 404 and body with message when provided update id not found", async () => {
+      const token = await getTokenViaSignUp();
 
-        const { status, body } = await request(app)
-          .put(`/api/update/not-exists-id`)
-          .send({
-            title: "The Update Updated",
-          })
-          .set("Authorization", `Bearer ${token}`);
+      const { status, body } = await request(app)
+        .put(`/api/update/not-exists-id`)
+        .send({
+          title: "The Update Updated",
+        })
+        .set("Authorization", `Bearer ${token}`);
 
-        expect(status).toBe(404)
-        expect(body.message).toBe("No Update found");
-      }
-    );
+      expect(status).toBe(404);
+      expect(body.message).toBe("No Update found");
+    });
   });
 
   describe("[DELETE] /api/update/:id", () => {
     it("should return 200 and body with the deleted update", async () => {
-      const { token, updates } = await setupUserProductAndUpdates()
+      const { token, updates } = await setupUserProductAndUpdates();
 
-      const targetUpdate = updates[0]
-      const { status, body} = await request(app).delete(`/api/update/${targetUpdate.id}`).set("Authorization", `Bearer ${token}`)
+      const targetUpdate = updates[0];
+      const { status, body } = await request(app)
+        .delete(`/api/update/${targetUpdate.id}`)
+        .set("Authorization", `Bearer ${token}`);
 
-      expect(status).toBe(200)
-      expect(body.data).toBeDefined()
-      expect(body.data.id).toBe(targetUpdate.id)
-    })
+      expect(status).toBe(200);
+      expect(body.data).toBeDefined();
+      expect(body.data.id).toBe(targetUpdate.id);
+    });
     it("should return 404 and body with message when the provided update id not found", async () => {
-      const token = await getTokenViaSignUp()
+      const token = await getTokenViaSignUp();
 
       const { status, body } = await request(app)
         .delete(`/api/update/not-exists-id`)
         .set("Authorization", `Bearer ${token}`);
 
-      expect(status).toBe(404)
-      expect(body.message).toBe("No Update found")
-    })
-  })
+      expect(status).toBe(404);
+      expect(body.message).toBe("No Update found");
+    });
+  });
 });
