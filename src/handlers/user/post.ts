@@ -10,7 +10,7 @@ import { AppError } from "../../modules/error";
  *   description: The API for managing users
  * /user:
  *   post:
- *     summary: Creates a new user and generates a jwt user session token. Used for signing up
+ *     summary: Creates a new user and generates a jwt user session token. Used for signing up. Token expires in 8h
  *     tags: [User]
  *     produces:
  *       - application/json
@@ -92,7 +92,7 @@ export const createNewUser = async (
  *   description: The API for managing users
  * /sign_in:
  *   post:
- *     summary: Generates a jwt user session token. Used for signing in
+ *     summary: Generates a jwt user session token. Used for signing in. Token expires in 8h
  *     tags: [User]
  *     produces:
  *       - application/json

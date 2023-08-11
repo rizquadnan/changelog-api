@@ -5,7 +5,7 @@ const options = {
   definition: {
     openapi: "3.0.1",
     info: {
-      title: "Chronos API",
+      title: "Change Log API",
       version: "1.0.0",
     },
     components: {

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { AppError } from "./error";
 import config from "../config"
@@ -19,23 +19,27 @@ export const hashPasswordSync = (password: string) => {
 type TCreateJWTArg = {
   username: string;
   userId: string;
+  options?: SignOptions
 };
-export const createJWT = ({ userId, username }: TCreateJWTArg) => {
+export const createJWT = ({ userId, username, options = { expiresIn: "8h" } }: TCreateJWTArg) => {
   const token = jwt.sign(
     {
       username,
       id: userId,
     },
-    config.secrets.jwt as string
+    config.secrets.jwt as string,
+    options
   );
 
   return token;
 };
 
 type TJWT = {
-  username: string
-  id: string
-}
+  username: string;
+  id: string;
+  iat: number;
+  exp: number;
+}; 
 export const verifyToken = (token: string) => {
   return jwt.verify(token, config.secrets.jwt as string) as TJWT;
 };

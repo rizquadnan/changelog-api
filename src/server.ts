@@ -19,8 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  console.log("hello from express");
-  throw new Error("Hahahahha");
+  res.json("Welcome to Change Log API. Access the docs by accessing /docs");
 });
 
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(openapiSpecification));
